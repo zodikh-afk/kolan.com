@@ -1,0 +1,179 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";s
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Головна - Анонс концерту</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .nav {
+            background-color: #444;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+        .nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            display: flex;
+            width: 80%;
+            margin: 20px auto;
+            min-height: calc(100vh - 160px);
+        }
+        .sidebar {
+            width: 25%;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-right: 1px solid #ddd;
+        }
+        .main-content {
+            width: 75%;
+            padding: 15px;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+        th {
+            background-color: #444;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Анонс концерту: Назва гурту</h1>
+    </div>
+    <div class="nav">
+        <a href="index.html">Головна</a>
+        <a href="about.html">Про гурт</a>
+        <a href="contact.html">Контакти</a>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Бічна панель</h3>
+            <p>Додаткова інформація про тур:</p>
+            <ul>
+                <li><a href="index.html">Головна</a></li>
+                <li><a href="about.html">Історія гурту</a></li>
+                <li><a href="contact.html">Зв’язок з організаторами</a></li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <p>Запрошуємо на великий сольний концерт! Нижче — ключова інформація та розклад туру.</p>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/68/M8L8TH.png" alt="Постер концерту" width="20%">
+            <h2>Розклад туру</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Місто</th>
+                        <th>Майданчик</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12.10.2025</td>
+                        <td>Київ</td>
+                        <td>Палац Спорту</td>
+                    </tr>
+                    <tr>
+                        <td>15.10.2025</td>
+                        <td>Львів</td>
+                        <td>!FESTrepublic</td>
+                    </tr>
+                    <tr>
+                        <td>18.10.2025</td>
+                        <td>Одеса</td>
+                        <td>Green Theatre</td>
+                    </tr>
+                    <tr>
+                        <td>22.10.2025</td>
+                        <td>Харків</td>
+                        <td>Art-Zavod</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>Деталі</h2>
+            <p><strong>Початок:</strong> 19:00</p>
+            <p><strong>Квитки:</strong> доступні онлайн та в касах майданчиків</p>
+            <p><strong>Організатор:</strong> militant.zone</p>
+            <p><strong>Контакти:</strong> <a href="contact.html">info@example.com</a>, +380 00 000 00 00</p>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 Назва гурту. Усі права захищено.</p>
+    </div>
+</body>
+</html>
